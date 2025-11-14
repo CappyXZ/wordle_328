@@ -22,8 +22,9 @@ def usage():
 def main():
     port = usage()
     host = ''
+    serverAddr = (host, port)
     s = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-    s.bind(host, port)
+    s.bind(serverAddr)
     s.listen(5)
     print(f'Listening on {port}')
     while 1:

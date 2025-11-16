@@ -18,6 +18,7 @@ import socket
 import sys
 
 def main():
+    msg_size = 512
     # error checking and usage clause
     if not (2 <= len(sys.argv) <= 3):
         print("Usage: python client.py <host name> [port number]")
@@ -33,12 +34,17 @@ def main():
     else:
         port = 1337
 
-    # Create a TCP socket
+    # Create a TCP/IP socket
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Connect the socket to the server
         s.connect((host, port))
         print(f"Connected to server at {host}:{port}")
+        s.sendall("Hello".encode())
+        print("Said hello")
+        return_msg = s.recv(msg_size)
+        return_msg = return_msg.decode()
+        print(return_msg)
     finally:
         s.close()
 

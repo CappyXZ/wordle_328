@@ -2,6 +2,7 @@ import socket as sock
 import random
 import sys
 
+#test
 def usage():
     if len(sys.argv) == 1:
         port = 1337

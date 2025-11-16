@@ -2,7 +2,6 @@ import socket as sock
 import random
 import sys
 
-#test
 def usage():
     if len(sys.argv) == 1:
         port = 1337
@@ -13,7 +12,7 @@ def usage():
             print("Please enter a port number between 1024 and 65000") 
             sys.exit()
     else:
-        print(f"Usage:, {sys.argv[0]}: <tcp or udp> <hostname> ")
+        print(f"Usage:, {sys.argv[0]}: <tcp or udp>")
         sys.exit()
     return port
     
@@ -24,13 +23,28 @@ def main():
     port = usage()
     host = ''
     serverAddr = (host, port)
-    s = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-    s.bind(serverAddr)
-    s.listen(5)
-    print(f'Listening on {port}')
-    while 1:
-        clientSock, addr = s.accept()
-        print(f'Connect by {addr}')
+    msg_size = 512
+    try:
+
+        s = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+        s.setsockopt(sock.SOL_SOCKET, sock.SO_REUSEADDR, 1)
+        s.bind(serverAddr)
+        s.listen(5)
+        print(f'Listening on {port}')
+        while 1:
+            clientSock, addr = s.accept()
+            print(f'Connect by {addr}')
+            msg = clientSock.recv(msg_size)
+            msg = msg.decode()
+            print(f"Recieved {msg} from client")
+            clientSock.send("Okay".encode())
+            print("Said Okay")
+            clientSock.close()
+    except KeyboardInterrupt as key:
+        s.close()
+
+    finally:
+        s.close()
 
 
         

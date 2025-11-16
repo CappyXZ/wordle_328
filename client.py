@@ -33,25 +33,15 @@ def main():
     else:
         port = 1337
 
-    # Create a TCP/IP socket
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    # Create a TCP socket
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Connect the socket to the server
-        sock.connect((host, port))
+        s.connect((host, port))
         print(f"Connected to server at {host}:{port}")
+    finally:
+        s.close()
 
-        while True:
-            # Get user input
-            guess = input("Enter your guess (or 'exit' to quit): ")
-            if guess.lower() == 'exit':
-                print("Exiting the game.")
-                break
-
-            # Send the guess to the server
-            sock.sendall(guess.encode())
-
-            # Receive feedback from the server
-            feedback = sock.recv(1024).decode()
-            print(f"Feedback from server: {feedback}")
 
 
 

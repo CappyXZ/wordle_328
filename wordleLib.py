@@ -1,5 +1,4 @@
 # Authors: Cade Fandl, Ben Miller, Gabriel Sullivan
-# This file main author: Gabriel Sullivan
 # Majors: Computer Science, German Communication & Culture
 # Creation date: November 14, 2025
 # Due date: November 24, 2025

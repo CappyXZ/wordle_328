@@ -18,6 +18,7 @@ import socket
 import sys
 
 def main():
+    msg_size = 512
     # error checking and usage clause
     if not (2 <= len(sys.argv) <= 3):
         print("Usage: python client.py <host name> [port number]")
@@ -34,24 +35,19 @@ def main():
         port = 1337
 
     # Create a TCP/IP socket
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Connect the socket to the server
-        sock.connect((host, port))
+        s.connect((host, port))
         print(f"Connected to server at {host}:{port}")
+        s.sendall("Hello".encode())
+        print("Said hello")
+        return_msg = s.recv(msg_size)
+        return_msg = return_msg.decode()
+        print(return_msg)
+    finally:
+        s.close()
 
-        while True:
-            # Get user input
-            guess = input("Enter your guess (or 'exit' to quit): ")
-            if guess.lower() == 'exit':
-                print("Exiting the game.")
-                break
-
-            # Send the guess to the server
-            sock.sendall(guess.encode())
-
-            # Receive feedback from the server
-            feedback = sock.recv(1024).decode()
-            print(f"Feedback from server: {feedback}")
 
 
 

@@ -16,6 +16,7 @@
 # imports
 import socket
 import sys
+from wordleLib import getRandWord, getGuessResults
 
 def main():
     msg_size = 512

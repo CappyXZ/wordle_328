@@ -1,6 +1,6 @@
 import socket as sock
-import random
 import sys
+from wordleLib import getRandWord, getGuessResults
 
 def usage():
     if len(sys.argv) == 1:

@@ -1,5 +1,4 @@
 # Authors: Cade Fandl, Ben Miller, Gabriel Sullivan
-# This file main author: Gabriel Sullivan
 # Majors: Computer Science, German Communication & Culture
 # Creation date: November 14, 2025
 # Due date: November 24, 2025
@@ -20,7 +19,7 @@ def getRandWord():
     # Citation: referenced the following for lists:
     #           https://www.w3schools.com/python/python_lists.asp
     #           November 14, 2025
-    words = ["APPLE", "BREAK", "ZEROS", "SHITS", "GIVEN"]
+    words = ["APPLE", "BREAK", "ZEROS", "CRAPS", "GIVEN"]
     # Citation: referenced the following for random number generation:
     #           https://www.w3schools.com/python/module_random.asp
     #           https://www.w3schools.com/python/ref_random_randint.asp
@@ -44,4 +43,4 @@ def getGuessResults(guess, correctWord):
 #           https://stackoverflow.com/questions/8715990/python-how-to-tell-if-file-executed-as-import-vs-main-script
 #           November 14, 2025
 if __name__ == '__main__':
-    print(getRandWord());
+    print(getRandWord())

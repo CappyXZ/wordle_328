@@ -32,7 +32,7 @@ def main():
             print("Invalid port number. Port must be an integer.")
             sys.exit(1)
     else:
-        port = 1337
+        port = 13367
 
     # Create a TCP/IP socket
     try:

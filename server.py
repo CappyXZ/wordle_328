@@ -4,7 +4,7 @@ import sys
 
 def usage():
     if len(sys.argv) == 1:
-        port = 1337
+        port = 13367
     elif len(sys.argv) == 2:
         port = int(sys.argv[1])
         

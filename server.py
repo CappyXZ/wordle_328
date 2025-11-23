@@ -1,3 +1,19 @@
+###########################################################################################
+# Ben Miller, Cade Fandl, Gabe Sullivan
+# Computer Science
+# Created: November 14, 2025
+# Due: November 24, 2025
+# CSC 328
+# Prof Reiley Walther
+# Group Assignment - Wordle
+# server.py
+# Purpose: This is the server program for a networked version of Wordle. It takes multiple
+# connections at once using threads and will send a random word to the client.
+# Language: Python
+# How to run: python server.py [ port number ]
+###########################################################################################
+
+
 import socket as sock
 import random
 import sys
@@ -24,13 +40,13 @@ def usage():
             print("Please enter a port number between 1024 and 65000") 
             sys.exit()
     else:
-        print(f"Usage:, {sys.argv[0]}: <tcp or udp>")
+        print(f"Usage:, {sys.argv[0]}: [port number]")
         sys.exit()
     return port
 
 # Function name: client_work 
 # Description: This function will communicate with a single client which it will do in a thread
-# to ensure concurrency.
+# to ensure concurrency. 
 # Parameters (input): client_sock - client socket file descriptor
 #                     client_addr - the client's address
 # Return Value: none
@@ -38,14 +54,13 @@ def client_work(client_sock, client_addr):
     try:
         print(f'Connect by {client_addr}')
         lib.send_msg("HELLO", client_sock)
-        print("Said Okay")
         while 1:  
             msg2 = lib.recv_msg(client_sock)
-            if msg2 == "READY":
+            if msg2 == "READY" or msg2 == "WORD":
                 random_word = random.choice(word_bank)
                 lib.send_msg(random_word, client_sock)
                 print(f"The random word is: {random_word}")
-            elif msg2 == "BYE":
+            elif msg2 == "BYE" or msg2 == "QUIT":
                 break
     finally:
         client_sock.close()
@@ -58,9 +73,26 @@ def main():
     # make sure program is ran correctly
     port = usage() 
     host = ''
-    serverAddr = (host, port)
     threads = []
+    is_open = False
     try:
+        #citation for this code block
+        #https://stackoverflow.com/questions/19196105/how-to-check-if-a-network-port-is-open
+        while is_open == False:
+            test = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+            rv = test.connect_ex((host, port))
+
+            if rv == 0:
+                print(f"Port {port} is used")
+                port += 1
+            else:
+                print(f"Port {port} is not used")
+                is_open = True
+        test.close()
+
+        
+        serverAddr = (host, port)
+        
         # create server socket
         server = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
         # make it so the socket can reuse port quickly
@@ -79,11 +111,13 @@ def main():
             threads.append(client_thread)
             #start the thread's work
             client_thread.start()
+            if KeyboardInterrupt == True:
+                break
     #error checking
     except OSError as error:
         print(f"Socket error: {error}")
-    #allow ctrl C
-    except KeyboardInterrupt as key:
+    #ctrl c closes server safely
+    except KeyboardInterrupt:
             server.close()
     finally:
         #close server

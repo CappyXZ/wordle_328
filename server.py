@@ -1,7 +1,19 @@
 import socket as sock
+import random
 import sys
-from wordleLib import getRandWord, getGuessResults
+import threading
+import wordleLib as lib
 
+# word bank to send a word to user
+word_bank = ["crane","sloth","brick","ghost","plant","sharp","flame","crown","vigor","joint",
+             "sting","patch","blimp","draft","hound","grasp","piano","truck","flock","trace"]
+
+
+# Function name: usage 
+# Description: This function will make sure the user runs the program correctly 
+# and print the usage clause if it was ran incorrectly.
+# Parameters (input): N/A
+# Return Value: none
 def usage():
     if len(sys.argv) == 1:
         port = 13367
@@ -15,41 +27,72 @@ def usage():
         print(f"Usage:, {sys.argv[0]}: <tcp or udp>")
         sys.exit()
     return port
-    
+
+# Function name: client_work 
+# Description: This function will communicate with a single client which it will do in a thread
+# to ensure concurrency.
+# Parameters (input): client_sock - client socket file descriptor
+#                     client_addr - the client's address
+# Return Value: none
+def client_work(client_sock, client_addr):
+    try:
+        print(f'Connect by {client_addr}')
+        lib.send_msg("HELLO", client_sock)
+        print("Said Okay")
+        while 1:  
+            msg2 = lib.recv_msg(client_sock)
+            if msg2 == "READY":
+                random_word = random.choice(word_bank)
+                lib.send_msg(random_word, client_sock)
+                print(f"The random word is: {random_word}")
+            elif msg2 == "BYE":
+                break
+    finally:
+        client_sock.close()
+        print(f"Closed connection: {client_addr}")
+
 
 
 
 def main():
-    port = usage()
+    # make sure program is ran correctly
+    port = usage() 
     host = ''
     serverAddr = (host, port)
-    msg_size = 512
+    threads = []
     try:
-
-        s = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-        s.setsockopt(sock.SOL_SOCKET, sock.SO_REUSEADDR, 1)
-        s.bind(serverAddr)
-        s.listen(5)
+        # create server socket
+        server = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+        # make it so the socket can reuse port quickly
+        server.setsockopt(sock.SOL_SOCKET, sock.SO_REUSEADDR, 1) 
+        # bind the server to server address
+        server.bind(serverAddr)
+        # listen for connections and hold a queue up to 5 connections
+        server.listen(5)
         print(f'Listening on {port}')
         while 1:
-            clientSock, addr = s.accept()
-            print(f'Connect by {addr}')
-            msg = clientSock.recv(msg_size)
-            msg = msg.decode()
-            print(f"Recieved {msg} from client")
-            clientSock.send("Okay".encode())
-            print("Said Okay")
-            clientSock.close()
+            #accept connection from client
+            client_sock, client_addr = server.accept()
+            #create a thread for a client
+            client_thread = threading.Thread(target=client_work, args=(client_sock, client_addr))
+            #add client to a list for easy cleanup
+            threads.append(client_thread)
+            #start the thread's work
+            client_thread.start()
+    #error checking
+    except OSError as error:
+        print(f"Socket error: {error}")
+    #allow ctrl C
     except KeyboardInterrupt as key:
-        s.close()
-
+            server.close()
     finally:
-        s.close()
-
-
-        
-
-
+        #close server
+        server.close()
+        #join all threads created
+        for i in threads:
+            i.join()
+        print("")
+        print("Server and all threads closed")
 
 
 if __name__ == "__main__":

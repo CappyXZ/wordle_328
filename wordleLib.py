@@ -44,3 +44,34 @@ def getGuessResults(guess, correctWord):
 #           November 14, 2025
 if __name__ == '__main__':
     print(getRandWord())
+
+
+
+
+
+
+
+#Cade
+
+import socket as sock
+
+msg_size = 512
+
+# Function name: send_msg 
+# Description: This function will make sure the user runs the program correctly 
+# and print the usage clause if it was ran incorrectly.
+# Parameters (input): string text - what the message will send to the recipient
+#                     sock - the socket file descriptor
+# Return Value: none
+def send_msg(text, sock):
+    msg = text.encode()
+    sock.sendall(msg)
+
+# Function name: recv_msg 
+# Description: This function will recieve a message from a sender 
+# and decode it.
+# Parameters (input): sock - the socket file descriptor
+# Return Value: string msg - the message recieved after being decoded
+def recv_msg(sock):
+    msg = sock.recv(msg_size)
+    return msg.decode()

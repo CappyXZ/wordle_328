@@ -8,15 +8,56 @@
 # Group Assignment - Wordle
 # client.py
 # Purpose: This is the client program for a networked version of Wordle. It connects 
-#          to a server, sends user guesses, and receives feedback on those guesses.
+#          to a server, checks user guesses, and gives feedback on those guesses.
 # Language: Python
-# How to compile: python client.py < host name > < port number >
+# How to compile: python client.py < host name > [ port number ]
 ###########################################################################################
 
 # imports
 import socket
 import sys
-from wordleLib import getRandWord, getGuessResults
+import wordleLib as lib
+
+def wordle_game(hidden_word):
+    attempts = 6
+    word_len = 5
+    feedback = ""
+
+    #print out the games rules and how it will work
+    print("New game started 6 attempts, the hidden word is 5 characters long")
+    print("The symbol ""!"" means the letter is in the correct place")
+    print("The symbol ""@"" means the letter is in the word but in the wrong place")
+    print("The symbol ""#"" means the letter is not in the word")
+    while attempts > 0:
+        print(f"{attempts} attempts left:")
+        guess = input("Input guess here: ").lower()
+        if len(guess) != word_len:
+            print("The guess must be 5 characters exact")
+            continue
+
+        if guess == hidden_word:
+            print("You Won!!!")
+            break
+        else:
+            for i in range(len(hidden_word)):
+                hidden_char = hidden_word[i]
+                guess_char = guess[i]
+                if guess_char == hidden_char:
+                    feedback += "!"
+                elif guess_char in hidden_word:
+                    feedback += "@"
+                else: 
+                    feedback +="#"
+            print(f"Guess: {guess}")
+            print(f"hint:  {feedback}")
+            feedback = ""
+            attempts -= 1
+
+    if attempts == 0:
+        print("You lost!!! LOSER!!!!")
+
+
+
 
 def main():
     msg_size = 512
@@ -41,11 +82,24 @@ def main():
         # Connect the socket to the server
         s.connect((host, port))
         print(f"Connected to server at {host}:{port}")
-        s.sendall("Hello".encode())
-        print("Said hello")
-        return_msg = s.recv(msg_size)
-        return_msg = return_msg.decode()
-        print(return_msg)
+        msg1 = lib.recv_msg(s)
+        if msg1 == "HELLO":
+            lib.send_msg("READY", s)
+            while 1:
+                hidden_word = lib.recv_msg(s)
+                wordle_game(hidden_word)
+                user_input = input("Would you like to play again? [y/n]: ").lower()
+                while user_input != "y" and user_input != "n":
+                        user_input = input("Input must be [y/n]: ").lower()
+                if user_input == "y":
+                    lib.send_msg("READY", s)
+                elif user_input == "n":
+                    lib.send_msg("BYE", s)
+                    break
+
+
+    except OSError as error:
+        print(f"Socket error: {error}")
     finally:
         s.close()
 

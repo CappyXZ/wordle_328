@@ -7,7 +7,11 @@ Gabriel Sullivan - library code and readme
 # Project Description
 
 This project contains a Wordle server, client, and library used for entertainment.
-The client contacts the serve for a word which the player then must guess.
+The client contacts the server for a word which the player then must guess.
+The client will handle all of the guess checking and other gameplay methods. 
+The server will be concurrent and will handle multiple clients at once using threads. 
+The library will be used to store functions that will be the same between the server
+and client. 
 
 # How to Compile
 

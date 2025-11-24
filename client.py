@@ -77,8 +77,9 @@ def wordle_game(hidden_word):
                 else: # not in the word
                     feedback +="#"
 
-            # difference_update citation            
+            # difference_update & sets citation            
             #https://www.w3schools.com/python/ref_set_difference_update.asp
+            #https://www.w3schools.com/python/python_sets_methods.asp
             # will make sure a letter does not appear in both sorta_correct_letters and correct_letters
             # correct_letters takes priority so the letter will stay in that set but not the other
             sorta_correct_letters.difference_update(correct_letters)

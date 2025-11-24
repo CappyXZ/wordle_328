@@ -111,8 +111,6 @@ def main():
             threads.append(client_thread)
             #start the thread's work
             client_thread.start()
-            if KeyboardInterrupt == True:
-                break
     #error checking
     except OSError as error:
         print(f"Socket error: {error}")
